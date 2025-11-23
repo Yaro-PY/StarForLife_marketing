@@ -1,0 +1,1367 @@
+`<!DOCTYPE html>
+<html lang="uk">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Star for Life: Кешбек, що допомагає</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;700;900&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+        <style>
+            :root {
+                --primary: #0057b8;
+                --accent: #ffd700;
+                --dark: #0f0f13;
+                --darker: #050507;
+                --glass: rgba(30, 30, 40, 0.7);
+                --glass-strong: rgba(20, 20, 30, 0.9);
+                --text-main: #ffffff;
+                --text-sec: #a0a0b0;
+                --gradient: linear-gradient(135deg, #0057b8 0%, #00aaff 100%);
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                background-color: var(--dark);
+                color: var(--text-main);
+                font-family: 'Inter', sans-serif;
+                overflow-x: hidden;
+            }
+
+            .grid-bg {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: linear-gradient(
+                        rgba(255, 255, 255, 0.03) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(255, 255, 255, 0.03) 1px,
+                        transparent 1px
+                    );
+                background-size: 50px 50px;
+                z-index: -2;
+                pointer-events: none;
+            }
+
+            .bg-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0.25;
+                z-index: -1;
+                filter: grayscale(100%) contrast(1.2);
+            }
+
+            .bg-animation {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                background: radial-gradient(
+                        circle at 10% 20%,
+                        rgba(0, 87, 184, 0.15) 0%,
+                        transparent 40%
+                    ),
+                    radial-gradient(
+                        circle at 90% 80%,
+                        rgba(255, 215, 0, 0.1) 0%,
+                        transparent 40%
+                    );
+                animation: pulseBg 10s infinite alternate;
+            }
+            @keyframes pulseBg {
+                0% {
+                    opacity: 0.5;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes blink {
+                0%,
+                50% {
+                    opacity: 1;
+                }
+                51%,
+                100% {
+                    opacity: 0;
+                }
+            }
+
+            .logo-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .logo-sfl {
+                height: 48px;
+                width: auto;
+                filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.6))
+                    drop-shadow(0 0 24px rgba(255, 215, 0, 0.45));
+            }
+
+            .logo-caption {
+                font-size: 0.9rem;
+                color: var(--text-sec);
+                letter-spacing: 1px;
+            }
+
+            .nav-dots {
+                position: fixed;
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                z-index: 100;
+            }
+            .dot {
+                width: 16px;
+                height: 16px;
+                background: rgba(255, 255, 255, 0.25);
+                border-radius: 50%;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+            .dot.active {
+                background: var(--accent);
+                box-shadow: 0 0 15px var(--accent);
+                transform: scale(1.4);
+            }
+
+            section {
+                min-height: 100vh;
+                padding: 80px 10%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                position: relative;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            h1,
+            h2,
+            h3 {
+                font-family: 'Orbitron', sans-serif;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            h1 {
+                font-size: 4rem;
+                line-height: 1.1;
+                margin-bottom: 20px;
+                background: linear-gradient(to right, #fff, var(--primary));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            h2 {
+                font-size: 2.5rem;
+                color: var(--accent);
+                margin-bottom: 40px;
+                text-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            }
+
+            .highlight {
+                color: var(--accent);
+                font-weight: bold;
+            }
+            .text-blue {
+                color: var(--primary);
+            }
+
+            .grid-3 {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 30px;
+            }
+
+            .card {
+                background: var(--glass);
+                padding: 30px;
+                border-radius: 20px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                transition: 0.3s;
+                position: relative;
+                overflow: hidden;
+            }
+            .card:hover {
+                transform: translateY(-10px);
+                border-color: var(--primary);
+                box-shadow: 0 10px 30px rgba(0, 87, 184, 0.2);
+            }
+            .card i {
+                font-size: 2rem;
+                margin-bottom: 15px;
+                color: var(--accent);
+            }
+
+            .typing-container {
+                font-size: 1.5rem;
+                color: var(--text-sec);
+                height: 30px;
+                margin-bottom: 40px;
+                font-family: 'Orbitron';
+            }
+
+            .bank-integration {
+                display: flex;
+                gap: 50px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            .phone-mockup {
+                width: 300px;
+                height: 600px;
+                background: #000;
+                border: 10px solid #333;
+                border-radius: 30px;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            }
+            .screen {
+                padding: 20px;
+                color: white;
+                height: 100%;
+                background: #1a1a1a;
+                display: flex;
+                flex-direction: column;
+            }
+            .step-list {
+                flex: 1;
+                margin-top: 20px;
+            }
+            .step-item {
+                margin-bottom: 15px;
+                padding: 10px;
+                background: #333;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                opacity: 0;
+                transform: translateX(20px);
+                transition: 0.5s;
+            }
+            .step-item.visible {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            .step-item strong {
+                color: var(--accent);
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .sticker-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: center;
+            }
+            .sticker {
+                padding: 15px 25px;
+                background: white;
+                color: black;
+                font-weight: 800;
+                border-radius: 50px;
+                font-size: 1.1rem;
+                transform: rotate(var(--rot));
+                transition: 0.3s;
+                cursor: pointer;
+                border: 4px solid white;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+            .sticker:hover {
+                transform: scale(1.1) rotate(0deg);
+                z-index: 10;
+            }
+            .sticker.blue {
+                background: var(--primary);
+                color: white;
+                border-color: var(--primary);
+            }
+            .sticker.yellow {
+                background: var(--accent);
+                border-color: var(--accent);
+            }
+
+            .calendar-wrapper {
+                overflow-x: auto;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                min-width: 600px;
+            }
+            th,
+            td {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            th {
+                color: var(--accent);
+                text-transform: uppercase;
+                font-size: 0.9rem;
+            }
+            tr:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+            .tag {
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+            .tag.reels {
+                background: #e1306c;
+                color: white;
+            }
+            .tag.stories {
+                background: #f77737;
+                color: white;
+            }
+            .tag.post {
+                background: #405de6;
+                color: white;
+            }
+
+            .calculator {
+                background: var(--glass-strong);
+                padding: 40px;
+                border-radius: 20px;
+                text-align: center;
+                max-width: 600px;
+                margin: 0 auto;
+                border: 2px solid var(--primary);
+            }
+            input[type='range'] {
+                width: 100%;
+                margin: 20px 0;
+                accent-color: var(--accent);
+            }
+            .calc-result {
+                font-size: 3rem;
+                color: var(--accent);
+                font-weight: bold;
+                font-family: 'Orbitron';
+            }
+
+            .btn-cta {
+                padding: 20px 50px;
+                background: var(--primary);
+                color: white;
+                text-decoration: none;
+                font-size: 1.2rem;
+                font-weight: bold;
+                border-radius: 50px;
+                display: inline-block;
+                transition: 0.3s;
+                box-shadow: 0 0 20px rgba(0, 87, 184, 0.5);
+            }
+            .btn-cta:hover {
+                background: white;
+                color: var(--primary);
+                transform: scale(1.05);
+            }
+
+            .pill {
+                display: inline-block;
+                padding: 6px 14px;
+                border-radius: 999px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                font-size: 0.75rem;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--text-sec);
+                margin-bottom: 10px;
+            }
+
+            .strategy-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 20px;
+            }
+            .strategy-item {
+                background: var(--glass);
+                border-radius: 16px;
+                padding: 20px;
+                font-size: 0.9rem;
+            }
+            .strategy-item h3 {
+                font-size: 1rem;
+                margin-bottom: 10px;
+                text-transform: none;
+            }
+
+            .team-section {
+                text-align: center;
+            }
+
+            .team-section p.lead {
+                max-width: 700px;
+                margin: 0 auto 40px auto;
+                color: var(--text-sec);
+            }
+
+            .team-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 30px;
+            }
+
+            .team-card {
+                background: var(--glass);
+                border-radius: 20px;
+                padding: 25px 20px 30px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .team-avatar {
+                width: 110px;
+                height: 110px;
+                border-radius: 50%;
+                margin: 0 auto 15px;
+                overflow: hidden;
+                border: 3px solid rgba(255, 255, 255, 0.35);
+                box-shadow: 0 0 25px rgba(0, 87, 184, 0.6);
+            }
+
+            .team-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .team-name {
+                font-weight: 700;
+                font-size: 1.05rem;
+                margin-bottom: 5px;
+            }
+
+            .team-age {
+                font-size: 0.85rem;
+                color: var(--text-sec);
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                margin-bottom: 10px;
+            }
+
+            .team-desc {
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+
+            .btn-main {
+                background: var(--primary);
+                color: white;
+                padding: 15px 40px;
+                border: none;
+                border-radius: 50px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                letter-spacing: 1px;
+                transition: 0.3s;
+                box-shadow: 0 0 15px rgba(0, 87, 184, 0.4);
+            }
+
+            .btn-main:hover {
+                background: #0074e8;
+                box-shadow: 0 0 25px rgba(0, 115, 210, 0.7);
+            }
+
+            .poster-slide {
+                position: relative;
+                text-align: center;
+            }
+
+            .poster-inner {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+
+            .poster-logo {
+                margin-bottom: 40px;
+                position: relative;
+                display: inline-block;
+            }
+
+            .poster-logo::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 180px;
+                height: 180px;
+                transform: translate(-50%, -50%);
+                background: radial-gradient(
+                    circle,
+                    rgba(255, 215, 0, 0.55) 0%,
+                    rgba(0, 0, 0, 0) 70%
+                );
+                filter: blur(25px);
+                z-index: -1;
+            }
+
+            .poster-logo img {
+                height: 60px;
+                width: auto;
+                opacity: 1;
+                filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
+                    drop-shadow(0 0 35px rgba(255, 215, 0, 0.6))
+                    drop-shadow(0 0 60px rgba(255, 215, 0, 0.35));
+            }
+
+            .poster-slide::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                background: radial-gradient(
+                        circle at 20% 30%,
+                        rgba(0, 87, 184, 0.25),
+                        transparent 60%
+                    ),
+                    radial-gradient(
+                        circle at 80% 70%,
+                        rgba(255, 215, 0, 0.18),
+                        transparent 55%
+                    );
+                opacity: 0.7;
+                z-index: -1;
+            }
+
+            .poster-title {
+                font-family: 'Orbitron', sans-serif;
+                font-size: 3rem;
+                line-height: 1.2;
+                text-transform: uppercase;
+                background: linear-gradient(to right, #fff4c0, var(--accent));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-bottom: 30px;
+                text-shadow: 0 0 18px rgba(255, 215, 0, 0.25);
+            }
+
+            .poster-subtitle {
+                max-width: 700px;
+                margin: 0 auto;
+                font-size: 1.1rem;
+                color: var(--text-sec);
+                letter-spacing: 0.5px;
+            }
+
+            @media (max-width: 768px) {
+                section {
+                    padding: 60px 6%;
+                }
+
+                h1 {
+                    font-size: 2.6rem;
+                }
+
+                h2 {
+                    font-size: 2rem;
+                }
+
+                .poster-title {
+                    font-size: 2.2rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="grid-bg"></div>
+        <div class="bg-animation"></div>
+
+        <div class="nav-dots" id="navDots"></div>
+
+        <section>
+            <img
+                src="https://static.wixstatic.com/media/dae2b5_39d8b7be7f1e4d85bc04e68a9ee911f7f000.jpg/v1/fill/w_1905,h_582,al_c,q_85,usm_0.33_1.00_0.00,enc_avif,quality_auto/dae2b5_39d8b7be7f1e4d85bc04e68a9ee911f7f000.jpg"
+                class="bg-overlay"
+                alt=""
+            />
+            <div class="logo-wrapper">
+                <img
+                    class="logo-sfl"
+                    src="https://static.wixstatic.com/media/dae2b5_359c11f7701d49008f2e58ad636fe4ed~mv2.png/v1/fill/w_166,h_48,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/logo2.png"
+                    alt="Star for Life Ukraine Logo"
+                />
+            </div>
+
+            <div class="pill">★ STAR FOR LIFE UKRAINE · Соціальна реклама</div>
+            <h1>ТВІЙ КЕШБЕК —<br />ЧИЄСЬ МАЙБУТНЄ</h1>
+
+            <div class="typing-container">
+                <span id="typing-text"></span
+                ><span style="animation: blink 1s infinite">|</span>
+            </div>
+
+            <p
+                style="
+                    max-width: 650px;
+                    margin-bottom: 30px;
+                    font-size: 1.1rem;
+                    line-height: 1.6;
+                "
+            >
+                Міні-кампанія
+                <span class="highlight">«Кешбек, що допомагає»</span>
+                перетворює кешбек з повсякденних покупок на уроки програмування
+                та розвиток дітей у проєктах Star for Life Ukraine. Один раз
+                налаштовуєш — і щомісяця підтримуєш освіту без додаткових
+                витрат.
+            </p>
+            <a href="#story" class="btn-cta">Як це працює?</a>
+        </section>
+
+        <section id="story">
+            <h2>Сторітелінг: від кави до коду</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <h3 style="margin-bottom: 10px">Герой</h3>
+                    <p>
+                        Звичайна молода людина: платить карткою за каву, таксі,
+                        доставку. Раз на місяць отримує
+                        <span class="highlight">50–150 грн кешбеку</span>, який
+                        розчиняється на дрібниці.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom: 10px">Конфлікт</h3>
+                    <p>
+                        Паралельно десь в Україні підліток мріє про IT, але не
+                        має доступу до сучасних курсів, наставників і техніки.
+                        Їх розділяє усього кілька кліків у банківському додатку.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom: 10px">Рішення</h3>
+                    <p>
+                        Людина налаштовує
+                        <span class="highlight"
+                            >автоматичний донат кешбеку</span
+                        >
+                        на Star for Life Ukraine. Її бонусні гроші стають
+                        <strong
+                            >першим уроком, першим курсом та першим кроком до
+                            професії в IT</strong
+                        >
+                        для дитини.
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; text-align: center">
+                <p style="font-family: 'Orbitron'; font-size: 1.4rem">
+                    «Твій кешбек — майбутнє для маленьких українців у світі IT»
+                </p>
+                <p style="color: var(--text-sec); margin-top: 8px">
+                    Головна сторітелінг-ідея кампанії
+                </p>
+            </div>
+        </section>
+
+        <section>
+            <img
+                src="https://images.unsplash.com/photo-1557426272-fc759fdf7a8d?auto=format&fit=crop&w=1950&q=80"
+                class="bg-overlay"
+                alt=""
+            />
+            <h2>Чому це спрацює?</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <i class="fas fa-brain"></i>
+                    <h3>Психологія (Nudge)</h3>
+                    <p>
+                        Людям складно віддавати «свої» гроші. Але кешбек
+                        сприймається як бонус — його легше спрямувати на добро.
+                        Ми підштовхуємо людину зробити
+                        <strong>правильний вибір заздалегідь</strong>.
+                    </p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Малі суми → Великий ефект</h3>
+                    <p>
+                        Середній кешбек українця —
+                        <span class="highlight">50–150 грн/міс</span>. Якщо 500
+                        людей передадуть кешбек на благодійність, це вже
+                        <strong>десятки тисяч гривень</strong> щомісяця на
+                        навчання дітей.
+                    </p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-users"></i>
+                    <h3>Ком'юніті відповідальних</h3>
+                    <p>
+                        Це не разовий збір, а
+                        <strong
+                            >спільнота людей, які допомагають на
+                            автоматі</strong
+                        >. Вони пишаються тим, що їхні щоденні покупки
+                        підтримують освіту в Україні.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="how">
+            <h2>Механіка підключення</h2>
+            <div class="bank-integration">
+                <div style="flex: 1">
+                    <h3 style="margin-bottom: 20px">
+                        Все просто, як: один–два–три...
+                    </h3>
+                    <p style="margin-bottom: 30px">
+                        Ми використовуємо нативні функції Monobank та
+                        PrivatBank. Користувачу не потрібно вводити дані картки
+                        на сторонніх сайтах — усе відбувається
+                        <strong
+                            >всередині захищеного банківського додатку</strong
+                        >.
+                    </p>
+
+                    <div
+                        class="card"
+                        style="
+                            margin-bottom: 20px;
+                            border-left: 5px solid var(--primary);
+                        "
+                    >
+                        <h4>
+                            <i
+                                class="fas fa-shield-alt"
+                                style="font-size: 1rem"
+                            ></i>
+                            Довіра та прозорість
+                        </h4>
+                        <p style="font-size: 0.9rem">
+                            Користувач бачить, скільки кешбеку перераховано,
+                            може в будь-який момент змінити налаштування або
+                            відключити оплату.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="phone-mockup">
+                    <div class="screen">
+                        <div
+                            style="
+                                text-align: center;
+                                border-bottom: 1px solid #333;
+                                padding-bottom: 10px;
+                            "
+                        >
+                            Banking App
+                        </div>
+                        <div class="step-list">
+                            <div class="step-item visible">
+                                <strong>Крок 1</strong>
+                                Відкрий налаштування кешбеку в банківському
+                                додатку.
+                            </div>
+                            <div
+                                class="step-item visible"
+                                style="transition-delay: 0.2s"
+                            >
+                                <strong>Крок 2</strong>
+                                Обери опцію «Передавати на благодійність».
+                            </div>
+                            <div
+                                class="step-item visible"
+                                style="
+                                    transition-delay: 0.4s;
+                                    background: var(--primary);
+                                    color: white;
+                                "
+                            >
+                                <strong>Крок 3</strong>
+                                Знайди у списку <br />★ Star for Life Ukraine.
+                            </div>
+                            <div
+                                class="step-item visible"
+                                style="
+                                    transition-delay: 0.6s;
+                                    text-align: center;
+                                    margin-top: 40px;
+                                "
+                            >
+                                <i
+                                    class="fas fa-check-circle"
+                                    style="
+                                        color: var(--accent);
+                                        font-size: 2rem;
+                                    "
+                                ></i
+                                ><br />
+                                Готово! Ти
+                                <strong>інвестор у знання з IT</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Візуальний стиль & гасла</h2>
+            <p style="margin-bottom: 30px">
+                Тон бренду: <strong>легкий, технологічний, натхненний</strong>.
+                Поєднуємо айдентику України (синьо-жовті кольори) з
+                digital-естетикою. Використовуємо стікери та короткі фрази для
+                Instagram Stories, TikTok та Telegram.
+            </p>
+
+            <div class="sticker-grid">
+                <div class="sticker" style="--rot: -5deg">
+                    💸 Кешбек = Знання
+                </div>
+                <div class="sticker blue" style="--rot: 3deg">
+                    IT Investor 🚀
+                </div>
+                <div class="sticker yellow" style="--rot: -2deg">
+                    Твій кешбек навчає 😎
+                </div>
+                <div class="sticker" style="--rot: 4deg">Кава ☕️ → Код 💻</div>
+                <div class="sticker blue" style="--rot: -3deg">
+                    Майбутній розробник? 😉
+                </div>
+                <div class="sticker" style="--rot: 2deg">U Star For Life</div>
+                <div class="sticker yellow" style="--rot: 5deg">
+                    #КешбекЩоДопомагає
+                </div>
+                <div class="sticker blue" style="--rot: -4deg">
+                    Power of 10 UAH
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 50px">
+                <p style="font-family: 'Orbitron'; font-size: 1.5rem">
+                    «Твій кешбек → це віра дітей у своє майбутнє»
+                </p>
+                <p style="color: var(--text-sec)">Основний слоган кампанії</p>
+            </div>
+        </section>
+
+        <section class="poster-slide">
+            <div class="poster-inner">
+                <div class="poster-logo">
+                    <img
+                        src="https://static.wixstatic.com/media/dae2b5_359c11f7701d49008f2e58ad636fe4ed~mv2.png/v1/fill/w_166,h_48,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/logo2.png"
+                        alt="Star for Life Ukraine Logo"
+                    />
+                </div>
+
+                <h2 class="poster-title">
+                    Твій кешбек — це віра дітей<br />
+                    у своє майбутнє!
+                </h2>
+
+                <p class="poster-subtitle">
+                    Допоможи створити для українських дітей шанс на навчання,
+                    розвиток та гідне майбутнє.
+                </p>
+            </div>
+        </section>
+
+        <section>
+            <img
+                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1950&q=80"
+                class="bg-overlay"
+                alt=""
+            />
+            <h2>Короткий опис стратегії</h2>
+            <div class="strategy-grid">
+                <div class="strategy-item">
+                    <h3>Мета</h3>
+                    <p>
+                        Популяризувати ідею регулярних донатів фонду Star for
+                        Life Ukraine через кешбек, показати, що навіть маленькі
+                        суми можуть системно фінансувати освіту дітей.
+                    </p>
+                </div>
+                <div class="strategy-item">
+                    <h3>Цільова аудиторія</h3>
+                    <p>
+                        Молодь 18–35 років, що користується мобільними
+                        банківськими додатками, живе в містах, цікавиться
+                        технологіями, освітою та волонтерством.
+                    </p>
+                </div>
+                <div class="strategy-item">
+                    <h3>Канали та формати</h3>
+                    <p>
+                        Instagram (Reels, Stories, каруселі), TikTok (короткі
+                        відео з POV-сюжетами), Telegram (стікери, пости з
+                        апдейтами та результатами зборів).
+                    </p>
+                </div>
+                <div class="strategy-item">
+                    <h3>Ключове повідомлення</h3>
+                    <p>
+                        «Твій кешбек — не дрібниця. Це реальна допомога: урок,
+                        курс, наставник для дитини, яка мріє про майбутнє в IT».
+                    </p>
+                </div>
+                <div class="strategy-item">
+                    <h3>Спосіб залучення</h3>
+                    <p>
+                        Опитування, інтерактивні стікери, челендж
+                        <strong>#MyCashback</strong>, публікації історій успіху
+                        учнів, регулярні щомісячні нагадування. Також публікуємо
+                        людей, які підключили донат і залишили слова підтримки
+                        дітям.
+                    </p>
+                </div>
+                <div class="strategy-item">
+                    <h3>Орієнтовні KPI</h3>
+                    <p>
+                        Кількість підключених кешбек-донатів, середня сума
+                        щомісячного збору, охоплення та взаємодія з контентом
+                        (перегляди Reels, відповіді в опитуваннях, UGC по
+                        челенджу).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Контент-план (2 тижні · через день)</h2>
+            <div class="calendar-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="10%">День</th>
+                            <th width="15%">Формат</th>
+                            <th>Тема & сюжет</th>
+                            <th>Мета</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>День 1</td>
+                            <td><span class="tag reels">Reels</span></td>
+                            <td>
+                                <strong>POV: тобі нарахували кешбек.</strong
+                                ><br />
+                                Рука тягнеться витратити його на дрібниці, але
+                                ти обираєш «Star for Life».<br />
+                                Текст: «Твій кешбек → чиясь можливість
+                                навчатися».<br />
+                                <strong>CTA:</strong> Налаштуй кешбек сьогодні.
+                            </td>
+                            <td>Awareness</td>
+                        </tr>
+
+                        <tr>
+                            <td>День 3</td>
+                            <td><span class="tag stories">Stories</span></td>
+                            <td>
+                                <strong
+                                    >Опитування: «Куди зникає твій
+                                    кешбек?»</strong
+                                ><br />
+                                Кава / дрібниці / не знаю / на благодійність.<br />
+                                Другий слайд: пояснення про автодонат.<br />
+                                <strong>CTA:</strong> Хочеш, щоб кешбек приносив
+                                користь?
+                            </td>
+                            <td>Engagement</td>
+                        </tr>
+
+                        <tr>
+                            <td>День 5</td>
+                            <td><span class="tag post">Carousel</span></td>
+                            <td>
+                                <strong
+                                    >«Що може зробити 50 грн кешбеку?»</strong
+                                ><br />
+                                Навіть невелика сума має величезне значення. 50
+                                грн — це можливість для дитини пройти урок,
+                                отримати нове знання або зробити маленький крок
+                                до своєї майбутньої професії. Кожен внесок
+                                створює реальні зміни у житті тих, хто мріє
+                                навчатися.
+                            </td>
+                            <td>Education</td>
+                        </tr>
+
+                        <tr>
+                            <td>День 7</td>
+                            <td><span class="tag reels">Reels</span></td>
+                            <td>
+                                <strong>Історія учня.</strong><br />
+                                «Як я вчу Python». Легке, мотиваційне відео
+                                дитини з сайтом Star For Life.<br />
+                                <strong>CTA:</strong> Подаруй їм наступний крок.
+                            </td>
+                            <td>Social Proof</td>
+                        </tr>
+
+                        <tr>
+                            <td>День 9</td>
+                            <td><span class="tag stories">Stories</span></td>
+                            <td>
+                                <strong>Челендж #MyCashback.</strong><br />
+                                Зроби скрін налаштування кешбеку для Star For
+                                Life → виклади у сторіс → відміть фонд.<br />
+                                <strong>CTA:</strong> Долучайся до спільноти.
+                            </td>
+                            <td>Community</td>
+                        </tr>
+
+                        <tr>
+                            <td>День 11</td>
+                            <td><span class="tag post">Post</span></td>
+                            <td>
+                                <strong>Історії донаторів.</strong><br />
+                                Публікуємо людей, які підключили донат і
+                                залишили слова підтримки дітям.<br />
+                                <strong>CTA:</strong> Стань частиною стрічки
+                                вдячності.
+                            </td>
+                            <td>Trust</td>
+                        </tr>
+
+                        <tr>
+                            <td>День 13</td>
+                            <td><span class="tag reels">Reels</span></td>
+                            <td>
+                                <strong>Проміжний результат кампанії.</strong
+                                ><br />
+                                Скільки людей долучилося та що це дало дітям.<br />
+                                <strong>CTA:</strong> Приєднуйся — твій кешбек
+                                має значення.
+                            </td>
+                            <td>Retention</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h2>Калькулятор впливу</h2>
+            <p style="text-align: center; margin-bottom: 20px">
+                Покажи спонсорам та користувачам, як малі суми творять великі
+                дива.
+            </p>
+
+            <div class="calculator">
+                <p>
+                    Якщо
+                    <span id="people-count" class="highlight">100</span> людей
+                    підключать кешбек...
+                </p>
+                <input
+                    type="range"
+                    min="50"
+                    max="5000"
+                    value="100"
+                    step="50"
+                    id="slider"
+                />
+
+                <p style="margin-top: 30px">Ми отримаємо:</p>
+                <div class="calc-result">
+                    <span id="total-amount">10 000</span> ₴
+                </div>
+                <p style="margin-top: 10px; color: var(--text-sec)">
+                    щомісяця на освіту
+                </p>
+
+                <div
+                    style="
+                        margin-top: 30px;
+                        border-top: 1px solid rgba(255, 255, 255, 0.1);
+                        padding-top: 20px;
+                    "
+                >
+                    <p id="impact-text">
+                        Це оплатить 20 годин роботи викладача!
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-top: 50px; text-align: center">
+                <h3 style="color: var(--primary)">
+                    Додаткові механіки залучення
+                </h3>
+                <p style="max-width: 700px; margin: 10px auto 0 auto">
+                    1-го числа кожного місяця — сторіс-нагадування «День
+                    кешбеку», регулярний челендж <strong>#MyCashback</strong>,
+                    інтерактивні опитування та квізи. Для бізнес-партнерів —
+                    формат <strong>Match Donation</strong>, коли компанія
+                    подвоює суму кешбеку, зібрану її співробітниками.
+                </p>
+            </div>
+        </section>
+
+        <section
+            style="text-align: center; position: relative; overflow: hidden"
+        >
+            <img
+                src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1950&q=80"
+                alt="Діти, що навчаються"
+                class="bg-overlay"
+            />
+
+            <h2>VISION</h2>
+
+            <p style="font-size: 1.5rem; margin: 30px auto; max-width: 900px">
+                «Уявіть Україну через 10 років. Діти, які сьогодні отримали
+                доступ до знань завдяки вашій підтримці, завтра створять
+                стартап, що зміцнить економіку нашої країни».
+            </p>
+
+            <div style="font-size: 4rem; color: var(--accent); margin: 20px 0">
+                <i class="fas fa-rocket"></i>
+            </div>
+
+            <h3 style="text-transform: uppercase; letter-spacing: 2px">
+                Це більше, ніж кешбек. Це інвестиція у наше майбутнє.
+            </h3>
+        </section>
+
+        <section class="team-section">
+            <h2>Команда проєкту</h2>
+            <p class="lead">
+                Над ідеєю «Кешбек, що допомагає» працювали учні, які мріють про
+                майбутнє в технологіях, творчості та освіті.
+            </p>
+
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img
+                            src="https://i.imgur.com/bMqbbPJ.jpg"
+                            alt="Вайновська Валерія"
+                        />
+                    </div>
+                    <div class="team-name">Вайновська Валерія</div>
+                    <div class="team-age">12 років</div>
+                    <p class="team-desc">
+                        Мені подобається математика, а також я люблю малювати,
+                        читати та слухати музику. У майбутньому хочу стати
+                        дизайнером, щоб поєднати творчість із власними ідеями.
+                    </p>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img
+                            src="https://i.imgur.com/F0tHYqx.jpg"
+                            alt="Персик Ярослав"
+                        />
+                    </div>
+                    <div class="team-name">Персик Ярослав</div>
+                    <div class="team-age">12 років</div>
+                    <p class="team-desc">
+                        Я навчаюся у 7 класі, займаюся програмуванням 2 роки,
+                        люблю розв’язувати логічні задачі. У вільний час граю в
+                        шахи.
+                    </p>
+                </div>
+
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img
+                            src="https://i.imgur.com/ocsRyAl.jpg"
+                            alt="Шишова Дарина"
+                        />
+                    </div>
+                    <div class="team-name">Шишова Дарина</div>
+                    <div class="team-age">16 років</div>
+                    <p class="team-desc">
+                        Мої інтереси включають вивчення іноземних мов, подорожі,
+                        освоєння нових напрямів, читання, прослуховування музики
+                        та танці.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section style="text-align: center">
+            <img
+                src="https://images.unsplash.com/photo-1605902711622-cfb43c4437b5?auto=format&fit=crop&w=1950&q=80"
+                class="bg-overlay"
+                alt=""
+            />
+
+            <h1>Кешбек, що допомагає</h1>
+            <p style="max-width: 700px; margin: 0 auto 40px auto">
+                Ми маємо ідею, візуальний стиль, механіку та контент-план.
+                Наступний крок — запустити кампанію та підключити якомога більше
+                людей, чий кешбек стане знаннями для дітей.
+            </p>
+            <div>
+                <a href="#how" class="btn-cta">Почати з налаштування кешбеку</a>
+                <br /><br />
+                <span style="color: var(--text-sec); font-size: 0.9rem"
+                    >Концепт міні-кампанії для проєкту</span
+                >
+            </div>
+        </section>
+
+        <section>
+            <div class="slide-content" style="text-align: center">
+                <div
+                    style="
+                        font-size: 3rem;
+                        color: var(--primary);
+                        margin-bottom: 20px;
+                    "
+                >
+                    <i class="fas fa-check-circle"></i>
+                </div>
+
+                <h1>Дякуємо за увагу!</h1>
+                <p>
+                    Проєкт створено учнями Star for Life Ukraine у рамках
+                    навчального модуля.
+                </p>
+
+                <div
+                    style="
+                        margin-top: 40px;
+                        display: inline-block;
+                        text-align: left;
+                    "
+                ></div>
+
+                <br /><br />
+
+                <button class="btn-main" onclick="scrollToTop()">
+                    Переглянути ще раз
+                </button>
+            </div>
+        </section>
+
+        <script>
+            const text = [
+                'КЕШБЕК, ЩО ДОПОМАГАЄ',
+                'ТВОЯ ДОПОМОГА → ЧИЯСЬ ПЕРША IT-ПРОФЕСІЯ',
+                'ТВІЙ КЕШБЕК МОЖЕ НАВЧАТИ',
+            ];
+            let count = 0;
+            let index = 0;
+            let currentText = '';
+            let letter = '';
+
+            (function type() {
+                if (count === text.length) count = 0;
+                currentText = text[count];
+                letter = currentText.slice(0, ++index);
+
+                document.getElementById('typing-text').textContent = letter;
+
+                if (letter.length === currentText.length) {
+                    count++;
+                    index = 0;
+                    setTimeout(type, 2000);
+                } else {
+                    setTimeout(type, 100);
+                }
+            })();
+
+            const slider = document.getElementById('slider');
+            const peopleCount = document.getElementById('people-count');
+            const totalAmount = document.getElementById('total-amount');
+            const impactText = document.getElementById('impact-text');
+            const avgCashback = 100;
+
+            slider.addEventListener('input', function () {
+                const val = this.value;
+                peopleCount.innerText = val;
+                const total = val * avgCashback;
+                totalAmount.innerText = total.toLocaleString('uk-UA');
+
+                if (total < 20000) {
+                    impactText.innerText = `Це оплатить ${Math.floor(
+                        total / 500
+                    )} годин роботи викладача!`;
+                } else if (total < 100000) {
+                    impactText.innerText = `Це придбає ${Math.floor(
+                        total / 25000
+                    )} потужних ноутбуків для класу!`;
+                } else {
+                    impactText.innerText = `Це запустить повноцінний курс для цілої школи!`;
+                }
+            });
+
+            function scrollToSection(index) {
+                const sections = document.querySelectorAll('section');
+                sections[index].scrollIntoView({ behavior: 'smooth' });
+            }
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            const index = Array.from(
+                                document.querySelectorAll('section')
+                            ).indexOf(entry.target);
+                            document
+                                .querySelectorAll('.dot')
+                                .forEach((d) => d.classList.remove('active'));
+                            document
+                                .querySelectorAll('.dot')
+                                [index].classList.add('active');
+                        }
+                    });
+                },
+                { threshold: 0.5 }
+            );
+
+            function scrollToTop() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const sections = document.querySelectorAll('section');
+                const dotsContainer = document.getElementById('navDots');
+
+                sections.forEach((sec, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot' + (index === 0 ? ' active' : '');
+                    dot.onclick = () => scrollToSection(index);
+                    dotsContainer.appendChild(dot);
+                });
+            });
+
+            document
+                .querySelectorAll('section')
+                .forEach((sec) => observer.observe(sec));
+        </script>
+    </body>
+</html>
